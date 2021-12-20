@@ -1,6 +1,6 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -76,6 +76,6 @@ var ModalIcon = _styledComponents.default.span(_templateObject11 || (_templateOb
 
 exports.ModalIcon = ModalIcon;
 
-var ModalBackHeader = _styledComponents.default.div(_templateObject13 || (_templateObject13 = _taggedTemplateLiteral(["\n  height: 50px;\n  background-color: white;\n  width: 100%;\n  position: fixed;\n  z-index: 2;\n\n  @media (min-width: 769px) {\n    display: none;\n  }\n"])));
+var ModalBackHeader = _styledComponents.default.div(_templateObject13 || (_templateObject13 = _taggedTemplateLiteral(["\n  height: 70px;\n  background-color: white;\n  width: 100%;\n  position: fixed;\n  z-index: 2;\n\n  @media (min-width: 769px) {\n    display: none;\n  }\n"])));
 
 exports.ModalBackHeader = ModalBackHeader;
