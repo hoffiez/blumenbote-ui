@@ -4,6 +4,7 @@ import { useSession, useLanguage, useOrder, useEvent, useConfig, useCustomer, us
 import { useTheme } from 'styled-components'
 import FaUserCircle from '@meronex/icons/fa/FaUserCircle'
 import MdClose from '@meronex/icons/md/MdClose'
+import TiWarningOutline from '@meronex/icons/ti/TiWarningOutline'
 import FaMapMarkerAlt from '@meronex/icons/fa/FaMapMarkerAlt'
 import { OrderTypeSelectorContent } from '../OrderTypeSelectorContent'
 
@@ -19,7 +20,8 @@ import {
   CustomerInfo,
   UserEdit,
   AddressMenu,
-  MomentMenu
+  MomentMenu,
+  FarAwayMessage
 } from './styles'
 import { useWindowSize } from '../../../../../hooks/useWindowSize'
 import { useOnlineStatus } from '../../../../../hooks/useOnlineStatus'
@@ -39,6 +41,7 @@ import { Confirm } from '../Confirm'
 import { LoginForm } from '../LoginForm'
 import { SignUpForm } from '../SignUpForm'
 import { ForgotPasswordForm } from '../ForgotPasswordForm'
+import { getDistance } from '../../../../../utils'
 
 export const Header = (props) => {
   const {
@@ -49,7 +52,7 @@ export const Header = (props) => {
     isCustomerMode
   } = props
 
-  const location1 = useLocation()
+  const { pathname } = useLocation()
   const [events] = useEvent()
   const [{ parseDate }] = useUtils()
   const [, t] = useLanguage()
@@ -59,6 +62,7 @@ export const Header = (props) => {
   const theme = useTheme()
   const [configState] = useConfig()
   const [customerState, { deleteUserCustomer }] = useCustomer()
+  const [isFarAway, setIsFarAway] = useState(false)
 
   const clearCustomer = useRef(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -124,7 +128,7 @@ export const Header = (props) => {
 
   const handleGoToPage = (data) => {
     events.emit('go_to_page', data)
-    if (isCustomerMode && location1.pathname.includes('/orders')) {
+    if (isCustomerMode && pathname.includes('/orders')) {
       deleteUserCustomer(true)
       refreshOrderOptions()
     }
@@ -202,6 +206,12 @@ export const Header = (props) => {
           </LeftHeader>
           {isShowOrderOptions && (
             <Menu className='left-header'>
+              {windowSize.width > 820 && isFarAway && (
+                <FarAwayMessage>
+                  <TiWarningOutline />
+                  <span>{t('YOU_ARE_FAR_FROM_ADDRESS', 'Your are far from this address')}</span>
+                </FarAwayMessage>
+              )}
               {isCustomerMode && windowSize.width > 450 && (
                 <CustomerInfo
                   onClick={(e) => handleClickUserCustomer(e)}
@@ -315,6 +325,12 @@ export const Header = (props) => {
         {onlineStatus && isShowOrderOptions && (
           windowSize.width > 768 && windowSize.width <= 820 ? (
             <SubMenu>
+              {isFarAway && (
+                <FarAwayMessage>
+                  <TiWarningOutline />
+                  <span>{t('YOU_ARE_FAR_FROM_ADDRESS', 'Your are far from this address')}</span>
+                </FarAwayMessage>
+              )}
               <AddressMenu
                 onClick={() => openModal('address')}
               >
@@ -332,6 +348,12 @@ export const Header = (props) => {
             </SubMenu>
           ) : (
             <SubMenu>
+              {isFarAway && (
+                <FarAwayMessage>
+                  <TiWarningOutline />
+                  <span>{t('YOU_ARE_FAR_FROM_ADDRESS', 'Your are far from this address')}</span>
+                </FarAwayMessage>
+              )}
               <HeaderOption
                 variant='address'
                 addressState={orderState?.options?.address?.address?.split(',')?.[0]}
