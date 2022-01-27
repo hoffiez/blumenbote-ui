@@ -588,7 +588,7 @@ export const SkeletonBlockWrapp = styled.div`
 
 export const ShareOrder = styled.div`
   display: flex;
-  margin: 0 0 20px;
+  margin-bottom: 20px;
   justify-content: space-between;
   z-index: 1;
 

@@ -341,6 +341,18 @@ const OrderDetailsUI = (props) => {
                   <span>{order?.customer?.address}</span>
                 </InfoBlock>
               </OrderCustomer>
+              {order?.delivery_type === 1 && (
+                <CommentContainer>
+                  <h3>{t('DELIVERY_PREFERENCE', 'Delivery preference')}</h3>
+                  <span>{order?.delivery_option?.name ?? t('EITHER_WAY', 'Either way')}</span>
+                </CommentContainer>
+              )}
+              {order?.comment && (
+                <CommentContainer>
+                  <h3>{t('COMMENT', 'Comment')}</h3>
+                  <span>{order?.comment}</span>
+                </CommentContainer>
+              )}
 
               {parseInt(configs?.guest_uuid_access?.value, 10) && order?.hash_key && (
                 <ShareOrder>
