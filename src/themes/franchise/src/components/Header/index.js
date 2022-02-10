@@ -157,6 +157,25 @@ export const Header = (props) => {
     }
   }, [customerState?.user?.address])
 
+  useEffect(() => {
+    if (!(pathname.includes('/search') || pathname.includes('/checkout'))) {
+      setIsFarAway(false)
+      return
+    }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const crd = pos.coords
+      const distance = getDistance(crd.latitude, crd.longitude, orderState?.options?.address?.location?.lat, orderState?.options?.address?.location?.lng)
+      if (distance > 20) setIsFarAway(true)
+      else setIsFarAway(false)
+    }, (err) => {
+      console.warn(`ERROR(${err.code}): ${err.message}`)
+    }, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    })
+  }, [orderState?.options?.address?.location, pathname])
+
   return (
     <>
       {props.beforeElements?.map((BeforeElement, i) => (
