@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Skeleton from 'react-loading-skeleton'
 import FiMinusCircle from '@meronex/icons/fi/FiMinusCircle'
 import FiPlusCircle from '@meronex/icons/fi/FiPlusCircle'
@@ -13,24 +13,24 @@ import {
 
 import { scrollTo } from '../../../../../utils'
 import { useWindowSize } from '../../../../../hooks/useWindowSize'
-import { useTheme } from 'styled-components'
 
 import { ProductIngredient } from '../ProductIngredient'
 import { ProductOption } from '../ProductOption'
 import { ProductOptionSubOption } from '../ProductOptionSubOption'
-import { ProductShare } from '../ProductShare'
+import { ProductShare } from '../../../../../components/ProductShare'
 import { LoginForm } from '../LoginForm'
 import { SignUpForm } from '../SignUpForm'
 import { ForgotPasswordForm } from '../ForgotPasswordForm'
-import { AddressList } from '../../../../../components/AddressList'
+import { AddressList } from '../AddressList'
 
 import { Modal } from '../Modal'
-import { Button } from '../../../../../styles/Buttons'
+import { Button } from '../../styles/Buttons'
+import { Tabs, Tab } from '../../styles/Tabs'
 
 import {
   ProductContainer,
-  ProductInfoContent,
   WrapperImage,
+  SwiperWrapper,
   ProductInfo,
   ProductEdition,
   SectionTitle,
@@ -41,19 +41,19 @@ import {
   SkuContent,
   ProductFormTitle,
   WrapperIngredients,
-  WrapProductShare,
-  ProductQuantity,
-  SwiperWrapper,
+  ProductTabContainer,
+  Divider,
+  ProductShareWrapper,
   ProductName,
   Properties,
-  ProductDescription,
-  PriceContent,
   ProductMeta,
-  EstimatedPersons
+  EstimatedPersons,
+  ProductDescription,
+  PriceContent
 } from './styles'
+import { useTheme } from 'styled-components'
 import { TextArea } from '../../styles/Inputs'
-import { NotFoundSource } from '../../../../../components/NotFoundSource'
-
+import { NotFoundSource } from '../NotFoundSource'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import SwiperCore, {
   Navigation,
@@ -83,7 +83,6 @@ const ProductOptionsUI = (props) => {
   } = props
 
   const { product, loading, error } = productObject
-  const theme = useTheme()
 
   const windowSize = useWindowSize()
   const [{ auth, user }, { login }] = useSession()
@@ -91,7 +90,10 @@ const ProductOptionsUI = (props) => {
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [orderState] = useOrder()
   const [{ parsePrice }] = useUtils()
+  const theme = useTheme()
   const [modalPageToShow, setModalPageToShow] = useState('login')
+  const [tabValue, setTabValue] = useState('all')
+  const productContainerRef = useRef(null)
   const [gallery, setGallery] = useState([])
   const [thumbsSwiper, setThumbsSwiper] = useState(null)
 
@@ -122,7 +124,7 @@ const ProductOptionsUI = (props) => {
     let topPos = myElement.offsetTop - productContainer.offsetTop
     if (windowSize.width <= 768) {
       const productImage = document.getElementById('product_image')
-      topPos = topPos + (myElement.offsetTop < productImage?.clientHeight ? productImage?.clientHeight : 0)
+      topPos = topPos + (myElement.offsetTop < productImage.clientHeight ? productImage.clientHeight : 0)
     }
     scrollTo(productContainer, topPos, 1250)
   }
@@ -151,6 +153,25 @@ const ProductOptionsUI = (props) => {
     return classnames
   }
 
+  const handleChangeTabValue = (value) => {
+    setTabValue(value)
+  }
+
+  useEffect(() => {
+    if (document.getElementById(`${tabValue}`)) {
+      const extraHeight = windowSize.width < 769 ? 100 : 42
+      const top = (tabValue === 'all') ? 0 : document.getElementById(`${tabValue}`).offsetTop - extraHeight
+      let scrollElement = document.querySelector('.popup-dialog')
+      if (windowSize.width >= 1200) {
+        scrollElement = productContainerRef.current
+      }
+      scrollElement.scrollTo({
+        top: top,
+        behavior: 'smooth'
+      })
+    }
+  }, [tabValue])
+
   useEffect(() => {
     const imageList = []
     imageList.push(product?.images || theme.images?.dummies?.product)
@@ -170,13 +191,24 @@ const ProductOptionsUI = (props) => {
         </React.Fragment>))}
       {props.beforeComponents?.map((BeforeComponent, i) => (
         <BeforeComponent key={i} {...props} />))}
-      <ProductContainer className='product-container'>
+      <ProductContainer className='product-container' ref={productContainerRef}>
         {loading && !error && (
           <SkeletonBlock width={90}>
             <Skeleton variant='rect' height={50} />
             <Skeleton variant='rect' height={50} />
             <Skeleton variant='rect' height={200} />
           </SkeletonBlock>
+        )}
+
+        {product && !loading && !error && (
+          <ProductShareWrapper>
+            <ProductShare
+              slug={businessSlug}
+              categoryId={product?.category_id}
+              productId={product?.id}
+            />
+          </ProductShareWrapper>
+
         )}
         {
           props.beforeMidElements?.map((BeforeMidElements, i) => (
@@ -190,96 +222,139 @@ const ProductOptionsUI = (props) => {
         }
         {!loading && !error && product && (
           <>
+            <WrapperImage>
+              <SwiperWrapper>
+                <Swiper
+                  spaceBetween={10}
+                  navigation
+                  thumbs={{ swiper: thumbsSwiper }} className='mySwiper2'
+                >
+                  {gallery.map((img, i) => (
+                    <SwiperSlide key={i}>
+                      <img src={img} alt='' />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+                <Swiper
+                  onSwiper={setThumbsSwiper}
+                  spaceBetween={20}
+                  slidesPerView={5}
+                  breakpoints={{
+                    0: {
+                      slidesPerView: 3,
+                      spaceBetween: 20
+                    },
+                    300: {
+                      slidesPerView: 4,
+                      spaceBetween: 20
+                    },
+                    400: {
+                      slidesPerView: 5,
+                      spaceBetween: 20
+                    },
+                    550: {
+                      slidesPerView: 6,
+                      spaceBetween: 20
+                    },
+                    769: {
+                      slidesPerView: 4,
+                      spaceBetween: 20
+                    },
+                    1000: {
+                      slidesPerView: 5,
+                      spaceBetween: 20
+                    },
+                    1400: {
+                      slidesPerView: 6,
+                      spaceBetween: 20
+                    },
+                    1600: {
+                      slidesPerView: 7,
+                      spaceBetween: 20
+                    }
+                  }}
+                  freeMode
+                  watchSlidesProgress
+                  className='product-thumb'
+                >
+                  {gallery.map((img, i) => (
+                    <SwiperSlide key={i}>
+                      <img src={img} alt='' />
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </SwiperWrapper>
+            </WrapperImage>
             <ProductInfo>
-              <ProductInfoContent>
-                {product?.images && (
-                  <WrapperImage>
-                    <SwiperWrapper>
-                      <Swiper
-                        spaceBetween={10}
-                        navigation
-                        thumbs={{ swiper: thumbsSwiper }} className='mySwiper2'
-                      >
-                        {gallery.map((img, i) => (
-                          <SwiperSlide key={i}>
-                            <img src={img} alt='' />
-                          </SwiperSlide>
-                        ))}
-                      </Swiper>
-                      <Swiper
-                        onSwiper={setThumbsSwiper}
-                        spaceBetween={20}
-                        slidesPerView={5}
-                        breakpoints={{
-                          0: {
-                            slidesPerView: 3,
-                            spaceBetween: 20
-                          },
-                          300: {
-                            slidesPerView: 4,
-                            spaceBetween: 20
-                          },
-                          400: {
-                            slidesPerView: 5,
-                            spaceBetween: 20
-                          },
-                          550: {
-                            slidesPerView: 6,
-                            spaceBetween: 20
-                          },
-                          769: {
-                            slidesPerView: 7,
-                            spaceBetween: 20
-                          }
-                        }}
-                        freeMode
-                        watchSlidesProgress
-                        className='product-thumb'
-                      >
-                        {gallery.map((img, i) => (
-                          <SwiperSlide key={i}>
-                            <img src={img} alt='' />
-                          </SwiperSlide>
-                        ))}
-                      </Swiper>
-                    </SwiperWrapper>
-                    {product && !loading && !error && (
-                      <WrapProductShare>
-                        <ProductShare
-                          slug={businessSlug}
-                          categoryId={product?.category_id}
-                          productId={product?.id}
-                        />
-                      </WrapProductShare>
+              <ProductFormTitle>
+                <ProductName>{product?.name}</ProductName>
+                <Properties>
+                  <PriceContent>{parsePrice(product?.price)}</PriceContent>
+                  <ProductMeta>
+                    {product?.sku && product?.sku !== '-1' && product?.sku !== '1' && (
+                      <SkuContent>
+                        <span>{t('SKU', theme?.defaultLanguages?.SKU || 'Sku')}&nbsp;</span>
+                        <span>{product?.sku}</span>
+                      </SkuContent>
                     )}
-                  </WrapperImage>
-                )}
-                <ProductFormTitle>
-                  <ProductName>{product?.name}</ProductName>
-                  <Properties>
-                    <PriceContent>{parsePrice(product?.price)}</PriceContent>
-                    <ProductMeta>
-                      {product?.sku && product?.sku !== '-1' && product?.sku !== '1' && (
-                        <SkuContent>
-                          <span>{t('SKU', theme?.defaultLanguages?.SKU || 'Sku')}&nbsp;</span>
-                          <span>{product?.sku}</span>
-                        </SkuContent>
-                      )}
-                      {product?.sku && product?.sku !== '-1' && product?.sku !== '1' && product?.estimated_person && (
-                        <span>&nbsp;&#183;&nbsp;</span>
-                      )}
-                      {product?.estimated_person && (
-                        <EstimatedPersons>
-                          <span>{product?.estimated_person}&nbsp;</span>
-                          <span>{t('ESTIMATED_PERSONS', 'persons')}</span>
-                        </EstimatedPersons>
-                      )}
-                    </ProductMeta>
-                  </Properties>
-                  {product?.description && <ProductDescription>{product?.description}</ProductDescription>}
-                </ProductFormTitle>
-                <ProductEdition>
-                  {product?.ingredients.length > 0 && (<SectionTitle>{t('INGREDIENTS', 'Ingredients')}</SectionTitle>)}
+                    {product?.sku && product?.sku !== '-1' && product?.sku !== '1' && product?.estimated_person && (
+                      <span>&nbsp;&#183;&nbsp;</span>
+                    )}
+                    {product?.estimated_person && (
+                      <EstimatedPersons>
+                        <span>{product?.estimated_person}&nbsp;</span>
+                        <span>{t('ESTIMATED_PERSONS', 'persons')}</span>
+                      </EstimatedPersons>
+                    )}
+                  </ProductMeta>
+                </Properties>
+                {product?.description && <ProductDescription>{product?.description}</ProductDescription>}
+              </ProductFormTitle>
+              <Divider />
+              <ProductEdition>
+                {
+                  (product?.ingredients.length > 0 || product?.extras.length > 0) && (
+                    <ProductTabContainer id='all'>
+                      <Tabs variant='primary'>
+                        <Tab
+                          key='all'
+                          active={tabValue === 'all'}
+                          onClick={() => handleChangeTabValue('all')}
+                          borderBottom
+                        >
+                          {t('ALL', 'All')}
+                        </Tab>
+                        {
+                          product?.ingredients.length > 0 && (
+                            <Tab
+                              key='ingredients'
+                              active={tabValue === 'ingredients'}
+                              onClick={() => handleChangeTabValue('ingredients')}
+                              borderBottom
+                            >
+                              {t('INGREDIENTS', 'ingredients')}
+                            </Tab>
+                          )
+                        }
+                        {
+                          product?.extras.length > 0 && (
+                            <Tab
+                              key='extra'
+                              active={tabValue === 'extra'}
+                              onClick={() => handleChangeTabValue('extra')}
+                              borderBottom
+                            >
+                              {t('EXTRA', 'Extra')}
+                            </Tab>
+                          )
+                        }
+                      </Tabs>
+                    </ProductTabContainer>
+                  )
+                }
+
+                <div id='ingredients'>
+                  {product?.ingredients.length > 0 && (<SectionTitle>{t('INGREDIENTS', theme?.defaultLanguages?.INGREDIENTS || 'Ingredients')}</SectionTitle>)}
                   <WrapperIngredients isProductSoldout={isSoldOut || maxProductQuantity <= 0}>
                     {product?.ingredients.map(ingredient => (
                       <ProductIngredient
@@ -290,6 +365,8 @@ const ProductOptionsUI = (props) => {
                       />
                     ))}
                   </WrapperIngredients>
+                </div>
+                <div id='extra'>
                   {
                     product?.extras.map(extra => extra.options.map(option => {
                       const currentState = productCart.options[`id:${option?.id}`] || {}
@@ -327,31 +404,32 @@ const ProductOptionsUI = (props) => {
                       )
                     }))
                   }
-                  {!product?.hide_special_instructions && (
-                    <ProductComment>
-                      <SectionTitle>{t('SPECIAL_COMMENT', 'Special comment')}</SectionTitle>
-                      <TextArea
-                        rows={4}
-                        placeholder={t('SPECIAL_COMMENT', 'Special comment')}
-                        defaultValue={productCart.comment}
-                        onChange={handleChangeCommentState}
-                        disabled={!(productCart && !isSoldOut && maxProductQuantity)}
-                      />
-                    </ProductComment>
-                  )}
-                  {
-                    props.afterMidElements?.map((MidElement, i) => (
-                      <React.Fragment key={i}>
-                        {MidElement}
-                      </React.Fragment>))
-                  }
-                  {
-                    props.afterMidComponents?.map((MidComponent, i) => (
-                      <MidComponent key={i} {...props} />))
-                  }
-                </ProductEdition>
-              </ProductInfoContent>
+                </div>
+                {!product?.hide_special_instructions && (
+                  <ProductComment>
+                    <SectionTitle>{t('COMMENTS', theme?.defaultLanguages?.SPECIAL_COMMENT || 'COMMENTS')}</SectionTitle>
+                    <TextArea
+                      rows={4}
+                      placeholder={t('SPECIAL_COMMENT', theme?.defaultLanguages?.SPECIAL_COMMENT || 'Special comment')}
+                      defaultValue={productCart.comment}
+                      onChange={handleChangeCommentState}
+                      disabled={!(productCart && !isSoldOut && maxProductQuantity)}
+                    />
+                  </ProductComment>
+                )}
+                {
+                  props.afterMidElements?.map((MidElement, i) => (
+                    <React.Fragment key={i}>
+                      {MidElement}
+                    </React.Fragment>))
+                }
+                {
+                  props.afterMidComponents?.map((MidComponent, i) => (
+                    <MidComponent key={i} {...props} />))
+                }
+              </ProductEdition>
               <ProductActions>
+                <div className='price'>{productCart.total && parsePrice(productCart.total)}</div>
                 {
                   productCart && !isSoldOut && maxProductQuantity > 0 && (
                     <div className='incdec-control'>
@@ -359,7 +437,7 @@ const ProductOptionsUI = (props) => {
                         onClick={decrement}
                         className={`${productCart.quantity === 1 || isSoldOut ? 'disabled' : ''}`}
                       />
-                      <ProductQuantity>{productCart.quantity}</ProductQuantity>
+                      <span>{productCart.quantity}</span>
                       <FiPlusCircle
                         onClick={increment}
                         className={`${maxProductQuantity <= 0 || productCart.quantity >= maxProductQuantity || isSoldOut ? 'disabled' : ''}`}
@@ -367,7 +445,6 @@ const ProductOptionsUI = (props) => {
                     </div>
                   )
                 }
-
                 {productCart && !isSoldOut && maxProductQuantity > 0 && auth && orderState.options?.address_id && (
                   <Button
                     className={`add ${(maxProductQuantity === 0 || Object.keys(errors).length > 0) ? 'disabled' : ''}`}
@@ -376,13 +453,12 @@ const ProductOptionsUI = (props) => {
                     disabled={orderState.loading}
                   >
                     {orderState.loading ? (
-                      <span>{t('LOADING', 'Loading')}</span>
+                      <span>{t('LOADING', theme?.defaultLanguages?.LOADING || 'Loading')}</span>
                     ) : (
                       <span>
-                        {editMode ? t('UPDATE', 'Update') : t('ADD_TO_CART', 'Add to Cart')}
+                        {editMode ? t('UPDATE', theme?.defaultLanguages?.UPDATE || 'Update') : t('ADD', theme?.defaultLanguages?.ADD || 'Add')}
                       </span>
                     )}
-                    <span className='total'>{productCart.total && parsePrice(productCart.total)}</span>
                   </Button>
                 )}
 
@@ -393,7 +469,7 @@ const ProductOptionsUI = (props) => {
                       color='primary'
                       disabled
                     >
-                      {t('LOADING', 'Loading')}
+                      {t('LOADING', theme?.defaultLanguages?.LOADING || 'Loading')}
                     </Button>
                   ) : (
                     <AddressList
@@ -413,7 +489,7 @@ const ProductOptionsUI = (props) => {
                     disabled={isSoldOut || maxProductQuantity <= 0}
                     onClick={() => setModalIsOpen(true)}
                   >
-                    {isSoldOut || maxProductQuantity <= 0 ? t('SOLD_OUT', 'Sold out') : t('LOGIN_SIGNUP', 'Login / Sign Up')}
+                    {isSoldOut || maxProductQuantity <= 0 ? t('SOLD_OUT', theme?.defaultLanguages?.SOLD_OUT || 'Sold out') : t('LOGIN_SIGNUP', theme?.defaultLanguages?.LOGIN_SIGNUP || 'Login / Sign Up')}
                   </Button>
                 )}
               </ProductActions>
@@ -425,8 +501,7 @@ const ProductOptionsUI = (props) => {
           <Modal
             open={modalIsOpen}
             onClose={() => closeModal()}
-            width='750px'
-            padding='0'
+            width='50%'
           >
             {modalPageToShow === 'login' && (
               <LoginForm
@@ -436,7 +511,7 @@ const ProductOptionsUI = (props) => {
                     onClick={
                       (e) => handleCustomModalClick(e, { page: 'signup' })
                     } href='#'
-                  >{t('CREATE_ACCOUNT', 'Create account')}
+                  >{t('CREATE_ACCOUNT', theme?.defaultLanguages?.CREATE_ACCOUNT || 'Create account')}
                   </a>
                 }
                 elementLinkToForgotPassword={
@@ -444,7 +519,7 @@ const ProductOptionsUI = (props) => {
                     onClick={
                       (e) => handleCustomModalClick(e, { page: 'forgotpassword' })
                     } href='#'
-                  >{t('RESET_PASSWORD', 'Reset password')}
+                  >{t('RESET_PASSWORD', theme?.defaultLanguages?.RESET_PASSWORD || 'Reset password')}
                   </a>
                 }
                 useLoginByCellphone
@@ -458,7 +533,7 @@ const ProductOptionsUI = (props) => {
                     onClick={
                       (e) => handleCustomModalClick(e, { page: 'login' })
                     } href='#'
-                  >{t('LOGIN', 'Login')}
+                  >{t('LOGIN', theme?.defaultLanguages?.LOGIN || 'Login')}
                   </a>
                 }
                 useLoginByCellphone
@@ -474,7 +549,7 @@ const ProductOptionsUI = (props) => {
                     onClick={
                       (e) => handleCustomModalClick(e, { page: 'login' })
                     } href='#'
-                  >{t('LOGIN', 'Login')}
+                  >{t('LOGIN', theme?.defaultLanguages?.LOGIN || 'Login')}
                   </a>
                 }
                 isPopup
