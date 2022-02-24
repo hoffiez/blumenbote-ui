@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   CartStoresListing as StoresListingController,
   useOrder,
@@ -11,48 +11,53 @@ import { BusinessController } from '../BusinessController'
 import {
   Container,
   ItemListing,
-} from './styles';
+  WrapperSearch
+} from './styles'
 
 const CartStoresListingUI = (props) => {
   const {
     businessIdSelect,
     storesState,
     changeStoreState,
-    handleCartStoreChange,
+    handleChangeSearch,
+    handleCartStoreChange
   } = props
 
   const [, t] = useLanguage()
   const [orderState] = useOrder()
   const businessId = Object.values(orderState.carts).find(_cart => _cart?.uuid === props.cartuuid)?.business_id ?? {}
 
-  return(
+  return (
     <Container>
       {!storesState?.loading && !storesState?.error && storesState?.result && (
         <>
-          {storesState?.result?.length > 0 ? (
-            <ItemListing>
-              {storesState?.result.map(store => (
-                <BusinessController
-                  key={store.id}
-                  isCartStore
-                  className='card'
-                  business={store}
-                  isSkeleton={changeStoreState.loading && businessIdSelect === store.id}
-                  orderType={orderState?.options?.type}
-                  disabledStoreBtn={(changeStoreState?.result?.business_id ?? businessId) === store.id}
-                  handleCartStoreClick={handleCartStoreChange}
-                />
-              ))}
-            </ItemListing>
-          ) : (
-            <NotFoundSource
-              content={t('NOT_FOUND_CART_STORES', 'No businesses to show at this time.')}
-            />
+          {(!(storesState?.error || !storesState?.result?.length) || searchValue) && (
+            <WrapperSearch>
+              <SearchBar
+                onSearch={handleChangeSearch}
+                search={searchValue}
+                placeholder={t('SEARCH_BUSINESSES', 'Search Businesses')}
+              />
+            </WrapperSearch>
           )}
+          <ItemListing>
+            {storesState?.result.map(store => (
+              <BusinessController
+                key={store.id}
+                isCartStore
+                className='card'
+                business={store}
+                isSkeleton={changeStoreState.loading && businessIdSelect === store.id}
+                orderType={orderState?.options?.type}
+                disabledStoreBtn={(changeStoreState?.result?.business_id ?? businessId) === store.id}
+                handleCartStoreClick={handleCartStoreChange}
+              />
+            ))}
+          </ItemListing>
         </>
       )}
 
-      {storesState?.loading && (
+      {(storesState?.loading || (!storesState?.error && !storesState?.result)) && (
         <ItemListing>
           {[...Array(4).keys()].map(i => (
             <BusinessController
@@ -66,9 +71,13 @@ const CartStoresListingUI = (props) => {
         </ItemListing>
       )}
 
-      {!storesState?.loading && storesState?.error && (
+      {!storesState?.loading && (storesState?.error || storesState?.result?.length === 0) && (
         <NotFoundSource
-          content={t('ERROR_NOT_FOUND_CART_STORES', 'Sorry, an error has occurred')}
+          content={
+            storesState?.error
+              ? t('ERROR_NOT_FOUND_CART_STORES', 'Sorry, an error has occurred')
+              : t('NOT_FOUND_CART_STORES', 'No businesses to show at this time.')
+          }
         />
       )}
     </Container>
