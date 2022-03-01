@@ -26,7 +26,8 @@ const BusinessProductsListUI = (props) => {
     searchValue,
     isCartOnProductsList,
     handleClearSearch,
-    errorQuantityProducts
+    errorQuantityProducts,
+    currentCart
   } = props
 
   const [, t] = useLanguage()
@@ -51,6 +52,7 @@ const BusinessProductsListUI = (props) => {
                   businessId={businessId}
                   onProductClick={onProductClick}
                   isCartOnProductsList={isCartOnProductsList}
+                  productAddedToCartLength={currentCart?.products?.reduce((productsLength, Cproduct) => { return productsLength + (Cproduct?.id === product?.id ? Cproduct?.quantity : 0) }, 0)}
                 />
               ))
             }
@@ -73,6 +75,7 @@ const BusinessProductsListUI = (props) => {
                           businessId={businessId}
                           onProductClick={onProductClick}
                           isCartOnProductsList={isCartOnProductsList}
+                          productAddedToCartLength={currentCart?.products?.reduce((productsLength, Cproduct) => { return productsLength + (Cproduct?.id === product?.id ? Cproduct?.quantity : 0) }, 0)}
                         />
                       ))}
                     </ProductsListing>
@@ -109,6 +112,7 @@ const BusinessProductsListUI = (props) => {
                               product={product}
                               onProductClick={onProductClick}
                               isCartOnProductsList={isCartOnProductsList}
+                              productAddedToCartLength={currentCart?.products?.reduce((productsLength, Cproduct) => { return productsLength + (Cproduct?.id === product?.id ? Cproduct?.quantity : 0) }, 0)}
                             />
                           ))
                         }
