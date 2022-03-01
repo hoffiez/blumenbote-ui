@@ -15,10 +15,10 @@ import {
 } from 'ordering-components'
 import { UpsellingPage } from '../UpsellingPage'
 import parsePhoneNumber from 'libphonenumber-js'
-import { Modal } from '../Modal'
+
 import {
   Container,
-  WrappContainer,
+  WrapperLeftContainer,
   UserDetailsContainer,
   BusinessDetailsContainer,
   PaymentMethodContainer,
@@ -29,6 +29,10 @@ import {
   CartsList,
   WarningText,
   WrapperUserDetails,
+  WrapperRightContainer,
+  WrapperLeftContent,
+  CheckOutDivider,
+  DriverTipDivider,
   DeliveryOptionsContainer
 } from './styles'
 
@@ -43,7 +47,6 @@ import { DriverTips } from '../DriverTips'
 import { Cart } from '../Cart'
 import { Alert } from '../Confirm'
 import { CartContent } from '../CartContent'
-import { OrderSuccessModal } from '../OrderSuccessModal'
 import { Select } from '../../styles/Select'
 
 const mapConfigs = {
@@ -68,7 +71,6 @@ const CheckoutUI = (props) => {
     isCustomerMode,
     isResetPaymethod,
     setIsResetPaymethod,
-    onPlaceOrderClick,
     handleChangeDeliveryOption,
     instructionsOptions,
     deliveryOptionSelected
@@ -76,6 +78,7 @@ const CheckoutUI = (props) => {
 
   const theme = useTheme()
   const [validationFields] = useValidationFields()
+  // const [{ options, loading }, { changePaymethod }] = useOrder()
   const [{ options, loading }] = useOrder()
   const [, t] = useLanguage()
   const [{ parsePrice }] = useUtils()
@@ -87,8 +90,6 @@ const CheckoutUI = (props) => {
   const [userErrors, setUserErrors] = useState([])
   const [alertState, setAlertState] = useState({ open: false, content: [] })
   const [isUserDetailsEdit, setIsUserDetailsEdit] = useState(false)
-  const [createOrder, setCreateOrder] = useState(false)
-  const [cardData, setCardData] = useState(null)
 
   const driverTipsOptions = typeof configs?.driver_tip_options?.value === 'string'
     ? JSON.parse(configs?.driver_tip_options?.value) || []
@@ -101,7 +102,6 @@ const CheckoutUI = (props) => {
   })
 
   const handlePlaceOrder = () => {
-    setCreateOrder(true)
     if (!userErrors.length) {
       handlerClickPlaceOrder && handlerClickPlaceOrder()
       return
@@ -192,143 +192,183 @@ const CheckoutUI = (props) => {
       {props.beforeComponents?.map((BeforeComponent, i) => (
         <BeforeComponent key={i} {...props} />))}
       <Container>
-        <WrappContainer>
-          {!cartState.loading && cart?.status === 2 && (
-            <WarningMessage>
-              <VscWarning />
-              <h1>
-                {t('CART_STATUS_PENDING_MESSAGE', 'Your order is being processed, please wait a little more. if you\'ve been waiting too long, please reload the page')}
-              </h1>
-            </WarningMessage>
-          )}
-          {props.beforeElementsSectionOne?.map((BeforeElement, i) => (
-            <React.Fragment key={i}>
-              {BeforeElement}
-            </React.Fragment>))}
-          {props.beforeComponentsSectionOne?.map((BeforeComponent, i) => (
-            <BeforeComponent key={i} {...props} />))}
+        <WrapperLeftContainer>
+          <WrapperLeftContent>
+            {!cartState.loading && cart?.status === 2 && (
+              <WarningMessage>
+                <VscWarning />
+                <h1>
+                  {t('CART_STATUS_PENDING_MESSAGE', 'Your order is being processed, please wait a little more. if you\'ve been waiting too long, please reload the page')}
+                </h1>
+              </WarningMessage>
+            )}
+            <h2 className='checkout-title'>{t('CHECK_OUT', 'Checkout')}</h2>
+            {props.beforeElementsSectionOne?.map((BeforeElement, i) => (
+              <React.Fragment key={i}>
+                {BeforeElement}
+              </React.Fragment>))}
+            {props.beforeComponentsSectionOne?.map((BeforeComponent, i) => (
+              <BeforeComponent key={i} {...props} />))}
 
-          {!props.isHideSectionOne && (
-            (businessDetails?.loading || cartState.loading) ? (
-              <div style={{ width: '100%', marginBottom: '20px' }}>
-                <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                <Skeleton height={150} />
-              </div>
-            ) : (
-              <AddressDetails
-                location={businessDetails?.business?.location}
-                businessLogo={businessDetails?.business?.logo || theme.images?.dummies?.businessLogo}
-                isCartPending={cart?.status === 2}
-                businessId={cart?.business_id}
-                apiKey={configs?.google_maps_api_key?.value}
-                mapConfigs={mapConfigs}
-                isCustomerMode={isCustomerMode}
-              />
-            )
-          )}
+            {!props.isHideSectionOne && (
+              (businessDetails?.loading || cartState.loading) ? (
+                <div style={{ width: '100%', marginBottom: '20px' }}>
+                  <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                  <Skeleton height={150} />
+                </div>
+              ) : (
+                <AddressDetails
+                  location={businessDetails?.business?.location}
+                  businessLogo={businessDetails?.business?.logo || theme.images?.dummies?.businessLogo}
+                  isCartPending={cart?.status === 2}
+                  businessId={cart?.business_id}
+                  apiKey={configs?.google_maps_api_key?.value}
+                  mapConfigs={mapConfigs}
+                  isCustomerMode={isCustomerMode}
+                />
+              )
+            )}
 
-          {props.beforeElementsSectionTwo?.map((BeforeElement, i) => (
-            <React.Fragment key={i}>
-              {BeforeElement}
-            </React.Fragment>))}
-          {props.beforeComponentsSectionTwo?.map((BeforeComponent, i) => (
-            <BeforeComponent key={i} {...props} />))}
+            {props.beforeElementsSectionTwo?.map((BeforeElement, i) => (
+              <React.Fragment key={i}>
+                {BeforeElement}
+              </React.Fragment>))}
+            {props.beforeComponentsSectionTwo?.map((BeforeComponent, i) => (
+              <BeforeComponent key={i} {...props} />))}
 
-          {!props.isHideSectionTwo && (
-            <UserDetailsContainer>
-              <WrapperUserDetails>
-                {cartState.loading || (isCustomerMode && !customerState?.user?.id) ? (
+            {!props.isHideSectionTwo && (
+              <UserDetailsContainer>
+                <WrapperUserDetails>
+                  {cartState.loading || (isCustomerMode && !customerState?.user?.id) ? (
+                    <div>
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                    </div>
+                  ) : (
+                    <UserDetails
+                      isUserDetailsEdit={isUserDetailsEdit}
+                      cartStatus={cart?.status}
+                      businessId={cart?.business_id}
+                      useValidationFields
+                      useDefualtSessionManager
+                      useSessionUser={!isCustomerMode}
+                      isCustomerMode={isCustomerMode}
+                      userData={isCustomerMode && customerState.user}
+                      userId={isCustomerMode && customerState?.user?.id}
+                      isCheckout
+                    />
+                  )}
+                </WrapperUserDetails>
+              </UserDetailsContainer>
+            )}
+
+            {props.beforeElementsSectionThree?.map((BeforeElement, i) => (
+              <React.Fragment key={i}>
+                {BeforeElement}
+              </React.Fragment>))}
+            {props.beforeComponentsSectionThree?.map((BeforeComponent, i) => (
+              <BeforeComponent key={i} {...props} />))}
+
+            {!props.isHideSectionThree && (
+              <BusinessDetailsContainer>
+                {(businessDetails?.loading || cartState.loading) && !businessDetails?.error && (
                   <div>
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                    <div>
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                      <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                    </div>
                   </div>
-                ) : (
-                  <UserDetails
-                    isUserDetailsEdit={isUserDetailsEdit}
-                    cartStatus={cart?.status}
-                    businessId={cart?.business_id}
-                    useValidationFields
-                    useDefualtSessionManager
-                    useSessionUser={!isCustomerMode}
-                    isCustomerMode={isCustomerMode}
-                    userData={isCustomerMode && customerState.user}
-                    userId={isCustomerMode && customerState?.user?.id}
-                  />
                 )}
-              </WrapperUserDetails>
-            </UserDetailsContainer>
-          )}
-
-          {props.beforeElementsSectionThree?.map((BeforeElement, i) => (
-            <React.Fragment key={i}>
-              {BeforeElement}
-            </React.Fragment>))}
-          {props.beforeComponentsSectionThree?.map((BeforeComponent, i) => (
-            <BeforeComponent key={i} {...props} />))}
-
-          {!props.isHideSectionThree && (
-            <BusinessDetailsContainer>
-              {(businessDetails?.loading || cartState.loading) && !businessDetails?.error && (
-                <div>
+                {!cartState.loading && businessDetails?.business && Object.values(businessDetails?.business)?.length > 0 && (
                   <div>
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                    <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                    <h1>{t('BUSINESS_DETAILS', 'Business Details')}</h1>
+                    <div>
+                      <p>{businessDetails?.business?.address}</p>
+                      <p>{businessDetails?.business?.name}</p>
+                      <p>{businessDetails?.business?.email}</p>
+                      <p>{businessDetails?.business?.cellphone}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-              {!cartState.loading && businessDetails?.business && Object.values(businessDetails?.business)?.length > 0 && (
-                <div>
-                  <h1>{t('BUSINESS_DETAILS', 'Business Details')}</h1>
+                )}
+                {businessDetails?.error && businessDetails?.error?.length > 0 && (
                   <div>
-                    <p><strong>{t('NAME', 'Name')}:</strong> {businessDetails?.business?.name}</p>
-                    <p><strong>{t('EMAIL', 'Email')}:</strong> {businessDetails?.business?.email}</p>
-                    <p><strong>{t('CELLPHONE', 'Cellphone')}:</strong> {businessDetails?.business?.cellphone}</p>
-                    <p><strong>{t('ADDRESS', 'Address')}:</strong> {businessDetails?.business?.address}</p>
+                    <h1>{t('BUSINESS_DETAILS', 'Business Details')}</h1>
+                    <NotFoundSource
+                      content={businessDetails?.error[0]?.message || businessDetails?.error[0]}
+                    />
                   </div>
-                </div>
-              )}
-              {businessDetails?.error && businessDetails?.error?.length > 0 && (
-                <div>
-                  <h1>{t('BUSINESS_DETAILS', 'Business Details')}</h1>
-                  <NotFoundSource
-                    content={businessDetails?.error[0]?.message || businessDetails?.error[0]}
-                  />
-                </div>
-              )}
-            </BusinessDetailsContainer>
-          )}
+                )}
+              </BusinessDetailsContainer>
+            )}
+            <CheckOutDivider />
+            {props.beforeElementsSectionEight?.map((BeforeElement, i) => (
+              <React.Fragment key={i}>
+                {BeforeElement}
+              </React.Fragment>))}
+            {props.beforeComponentsSectionEight?.map((BeforeComponent, i) => (
+              <BeforeComponent key={i} {...props} />))}
 
-          {props.beforeElementsSectionEight?.map((BeforeElement, i) => (
-            <React.Fragment key={i}>
-              {BeforeElement}
-            </React.Fragment>))}
-          {props.beforeComponentsSectionEight?.map((BeforeComponent, i) => (
-            <BeforeComponent key={i} {...props} />))}
-
-          {cartState.loading && (
-            <div>
+            {cartState.loading && (
               <div>
-                <Skeleton height={35} style={{ marginBottom: '10px' }} />
-                <Skeleton height={55} style={{ marginBottom: '10px' }} />
+                <div>
+                  <Skeleton height={35} style={{ marginBottom: '10px' }} />
+                  <Skeleton height={55} style={{ marginBottom: '10px' }} />
+                </div>
               </div>
-            </div>
-          )}
-          {!props.isHideSectionEight && !cartState.loading && deliveryOptionSelected !== undefined && options?.type === 1 && (
-            <DeliveryOptionsContainer>
-              <h2>{t('DELIVERY_DETAILS', 'Delivery Details')}</h2>
-              <Select
-                defaultValue={deliveryOptionSelected}
-                options={deliveryOptions}
-                onChange={(val) => handleChangeDeliveryOption(val)}
-              />
-            </DeliveryOptionsContainer>
-          )}
+            )}
+            {!props.isHideSectionEight && !cartState.loading && deliveryOptionSelected !== undefined && options?.type === 1 && (
+              <DeliveryOptionsContainer>
+                <h2>{t('DELIVERY_DETAILS', 'Delivery Details')}</h2>
+                <Select
+                  defaultValue={deliveryOptionSelected}
+                  options={deliveryOptions}
+                  onChange={(val) => handleChangeDeliveryOption(val)}
+                />
+              </DeliveryOptionsContainer>
+            )}
+            <CheckOutDivider />
+            {props.beforeElementsSectionFive?.map((BeforeElement, i) => (
+              <React.Fragment key={i}>
+                {BeforeElement}
+              </React.Fragment>))}
+            {props.beforeComponentsSectionFive?.map((BeforeComponent, i) => (
+              <BeforeComponent key={i} {...props} />))}
+
+            {!props.isHideSectionFive && !cartState.loading && cart && (
+              <PaymentMethodContainer>
+                <h1>{t('PAYMENT_METHODS', 'Payment Methods')}</h1>
+                {!cartState.loading && cart?.status === 4 && (
+                  <WarningMessage style={{ marginTop: 20 }}>
+                    <VscWarning />
+                    <h1>
+                      {t('CART_STATUS_CANCEL_MESSAGE', 'The payment has not been successful, please try again')}
+                    </h1>
+                  </WarningMessage>
+                )}
+                <PaymentOptions
+                  cart={cart}
+                  isDisabled={cart?.status === 2}
+                  businessId={businessDetails?.business?.id}
+                  isLoading={businessDetails.loading}
+                  paymethods={businessDetails?.business?.paymethods}
+                  onPaymentChange={handlePaymethodChange}
+                  errorCash={errorCash}
+                  setErrorCash={setErrorCash}
+                  handleOrderRedirect={handleOrderRedirect}
+                  isCustomerMode={isCustomerMode}
+                  paySelected={paymethodSelected}
+                />
+              </PaymentMethodContainer>
+            )}
+          </WrapperLeftContent>
+        </WrapperLeftContainer>
+        <WrapperRightContainer>
           {props.beforeElementsSectionFour?.map((BeforeElement, i) => (
             <React.Fragment key={i}>
               {BeforeElement}
@@ -345,57 +385,24 @@ const CheckoutUI = (props) => {
             validationFields?.fields?.checkout?.driver_tip?.enabled &&
             driverTipsOptions.length > 0 &&
             (
-              <DriverTipContainer>
-                <h1>{t('DRIVER_TIPS', 'Driver Tips')}</h1>
-                <DriverTips
-                  businessId={cart?.business_id}
-                  driverTipsOptions={driverTipsOptions}
-                  isFixedPrice={parseInt(configs?.driver_tip_type?.value, 10) === 1 || !!parseInt(configs?.driver_tip_use_custom?.value, 10)}
-                  isDriverTipUseCustom={!!parseInt(configs?.driver_tip_use_custom?.value, 10)}
-                  driverTip={parseInt(configs?.driver_tip_type?.value, 10) === 1 || !!parseInt(configs?.driver_tip_use_custom?.value, 10)
-                    ? cart?.driver_tip
-                    : cart?.driver_tip_rate}
-                  useOrderContext
-                />
-              </DriverTipContainer>
+              <>
+                <DriverTipContainer>
+                  <h1>{t('DRIVER_TIPS', 'Driver Tips')}</h1>
+                  <p>{t('100%_OF_THE_TIP_YOUR_DRIVER', '100% of the tip goes to your driver')}</p>
+                  <DriverTips
+                    businessId={cart?.business_id}
+                    driverTipsOptions={driverTipsOptions}
+                    isFixedPrice={parseInt(configs?.driver_tip_type?.value, 10) === 1 || !!parseInt(configs?.driver_tip_use_custom?.value, 10)}
+                    isDriverTipUseCustom={!!parseInt(configs?.driver_tip_use_custom?.value, 10)}
+                    driverTip={parseInt(configs?.driver_tip_type?.value, 10) === 1 || !!parseInt(configs?.driver_tip_use_custom?.value, 10)
+                      ? cart?.driver_tip
+                      : cart?.driver_tip_rate}
+                    useOrderContext
+                  />
+                </DriverTipContainer>
+                <DriverTipDivider />
+              </>
             )}
-
-          {props.beforeElementsSectionFive?.map((BeforeElement, i) => (
-            <React.Fragment key={i}>
-              {BeforeElement}
-            </React.Fragment>))}
-          {props.beforeComponentsSectionFive?.map((BeforeComponent, i) => (
-            <BeforeComponent key={i} {...props} />))}
-
-          {!props.isHideSectionFive && !cartState.loading && cart && (
-            <PaymentMethodContainer>
-              <h1>{t('PAYMENT_METHODS', 'Payment Methods')}</h1>
-              {!cartState.loading && cart?.status === 4 && (
-                <WarningMessage style={{ marginTop: 20 }}>
-                  <VscWarning />
-                  <h1>
-                    {t('CART_STATUS_CANCEL_MESSAGE', 'The payment has not been successful, please try again')}
-                  </h1>
-                </WarningMessage>
-              )}
-              <PaymentOptions
-                cart={cart}
-                isDisabled={cart?.status === 2}
-                businessId={businessDetails?.business?.id}
-                isLoading={businessDetails.loading}
-                paymethods={businessDetails?.business?.paymethods}
-                onPaymentChange={handlePaymethodChange}
-                errorCash={errorCash}
-                setErrorCash={setErrorCash}
-                handleOrderRedirect={handleOrderRedirect}
-                isCustomerMode={isCustomerMode}
-                paySelected={paymethodSelected}
-                setCardData={setCardData}
-                handlePlaceOrder={handlePlaceOrder}
-                onPlaceOrderClick={onPlaceOrderClick}
-              />
-            </PaymentMethodContainer>
-          )}
           {props.beforeElementsSectionSix?.map((BeforeElement, i) => (
             <React.Fragment key={i}>
               {BeforeElement}
@@ -455,18 +462,7 @@ const CheckoutUI = (props) => {
               {t('WARNING_INVALID_PRODUCTS', 'Some products are invalid, please check them.')}
             </WarningText>
           )}
-
-        </WrappContainer>
-        {createOrder && cartState.cart && (
-          <Modal
-            open={createOrder}
-            width='50%'
-            hideCloseDefault
-            onClose={() => setCreateOrder(false)}
-          >
-            <OrderSuccessModal cardData={cardData} cart={cartState.cart} businessData={businessDetails?.business} isCheckOut />
-          </Modal>
-        )}
+        </WrapperRightContainer>
         <Alert
           title={t('CUSTOMER_DETAILS', 'Customer Details')}
           content={alertState.content}
@@ -656,11 +652,26 @@ export const Checkout = (props) => {
       )}
 
       {cartState.loading && !(window.location.pathname === '/checkout') && (
-        <div style={{ width: '80%', margin: 'auto auto 20px' }}>
-          <Skeleton height={35} style={{ marginBottom: '10px' }} />
-          <Skeleton height={150} style={{ marginBottom: '10px' }} />
-          <Skeleton height={35} count={6} style={{ marginBottom: '10px' }} />
-        </div>
+        <Container>
+          <WrapperLeftContainer>
+            <Skeleton height={30} />
+            <Skeleton height={100} style={{ marginBottom: '15px' }} />
+            <Skeleton height={25} />
+            <Skeleton height={50} style={{ marginBottom: '15px' }} />
+            <Skeleton height={25} />
+            <Skeleton height={50} style={{ marginBottom: '15px' }} />
+            <Skeleton height={25} />
+            <Skeleton height={25} />
+          </WrapperLeftContainer>
+          <WrapperRightContainer>
+            <Skeleton height={25} />
+            <Skeleton height={50} style={{ marginBottom: '20px' }} />
+            <Skeleton height={25} />
+            <Skeleton height={60} />
+            <Skeleton height={80} style={{ marginBottom: '20px' }} />
+            <Skeleton height={25} />
+          </WrapperRightContainer>
+        </Container>
       )}
 
       {cartUuid && cartState.cart && cartState.cart?.status !== 1 && <CheckoutController {...checkoutProps} />}
