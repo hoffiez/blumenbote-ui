@@ -26,7 +26,6 @@ import {
 } from './styles'
 import { useWindowSize } from '../../../../../hooks/useWindowSize'
 import { useOnlineStatus } from '../../../../../hooks/useOnlineStatus'
-import { LanguageSelector } from '../../../../../components/LanguageSelector'
 
 import { UserPopover } from '../UserPopover'
 import { CartPopover } from '../CartPopover'
@@ -332,7 +331,6 @@ export const Header = (props) => {
                     </>
                   )
                 }
-                <LanguageSelector />
               </Menu>
             </RightHeader>
           )}
