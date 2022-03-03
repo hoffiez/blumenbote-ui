@@ -11,25 +11,15 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _reactLoadingSkeleton = _interopRequireDefault(require("react-loading-skeleton"));
 
+var _FiMinusCircle = _interopRequireDefault(require("@meronex/icons/fi/FiMinusCircle"));
+
+var _FiPlusCircle = _interopRequireDefault(require("@meronex/icons/fi/FiPlusCircle"));
+
 var _orderingComponents = require("ordering-components");
 
 var _utils = require("../../../../../utils");
 
 var _useWindowSize = require("../../../../../hooks/useWindowSize");
-
-var _ProductShare = require("../../../../../components/ProductShare");
-
-var _Modal = require("../../../../../components/Modal");
-
-var _ForgotPasswordForm = require("../../../../../components/ForgotPasswordForm");
-
-var _NotFoundSource = require("../../../../../components/NotFoundSource");
-
-var _LoginForm = require("../LoginForm");
-
-var _SignUpForm = require("../SignUpForm");
-
-var _AddressList = require("../AddressList");
 
 var _ProductIngredient = require("../ProductIngredient");
 
@@ -37,13 +27,37 @@ var _ProductOption = require("../ProductOption");
 
 var _ProductOptionSubOption = require("../ProductOptionSubOption");
 
-var _styles = require("../../styles");
+var _ProductShare = require("../../../../../components/ProductShare");
 
-var _styledComponents = require("styled-components");
+var _LoginForm = require("../LoginForm");
+
+var _SignUpForm = require("../SignUpForm");
+
+var _ForgotPasswordForm = require("../ForgotPasswordForm");
+
+var _AddressList = require("../AddressList");
+
+var _Modal = require("../Modal");
+
+var _Buttons = require("../../styles/Buttons");
 
 var _Tabs = require("../../styles/Tabs");
 
-var _styles2 = require("./styles");
+var _styles = require("./styles");
+
+var _styledComponents = require("styled-components");
+
+var _Inputs = require("../../styles/Inputs");
+
+var _NotFoundSource = require("../NotFoundSource");
+
+var _react2 = require("swiper/react");
+
+var _swiper = _interopRequireWildcard(require("swiper"));
+
+require("swiper/swiper-bundle.min.css");
+
+require("swiper/swiper.min.css");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -59,6 +73,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -71,8 +87,10 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+_swiper.default.use([_swiper.Navigation, _swiper.Thumbs]);
+
 var ProductOptionsUI = function ProductOptionsUI(props) {
-  var _props$beforeElements, _props$beforeComponen, _props$beforeMidEleme, _props$beforeMidCompo, _theme$images, _theme$images$dummies, _theme$defaultLanguag, _theme$defaultLanguag2, _theme$defaultLanguag3, _theme$defaultLanguag4, _props$afterMidElemen, _props$afterMidCompon, _orderState$options, _theme$defaultLanguag5, _theme$defaultLanguag6, _theme$defaultLanguag7, _orderState$options2, _theme$defaultLanguag8, _theme$defaultLanguag9, _theme$defaultLanguag10, _theme$defaultLanguag11, _theme$defaultLanguag12, _theme$defaultLanguag13, _theme$defaultLanguag14, _error$, _props$afterComponent, _props$afterElements;
+  var _props$beforeElements, _props$beforeComponen, _props$beforeMidEleme, _props$beforeMidCompo, _theme$defaultLanguag, _theme$defaultLanguag2, _theme$defaultLanguag3, _theme$defaultLanguag4, _props$afterMidElemen, _props$afterMidCompon, _orderState$options, _theme$defaultLanguag5, _theme$defaultLanguag6, _theme$defaultLanguag7, _orderState$options2, _theme$defaultLanguag8, _theme$defaultLanguag9, _theme$defaultLanguag10, _theme$defaultLanguag11, _theme$defaultLanguag12, _theme$defaultLanguag13, _theme$defaultLanguag14, _error$, _props$afterComponent, _props$afterElements;
 
   var businessSlug = props.businessSlug,
       editMode = props.editMode,
@@ -115,9 +133,7 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
 
   var _useUtils = (0, _orderingComponents.useUtils)(),
       _useUtils2 = _slicedToArray(_useUtils, 1),
-      _useUtils2$ = _useUtils2[0],
-      parsePrice = _useUtils2$.parsePrice,
-      optimizeImage = _useUtils2$.optimizeImage;
+      parsePrice = _useUtils2[0].parsePrice;
 
   var theme = (0, _styledComponents.useTheme)();
 
@@ -126,18 +142,22 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
       modalPageToShow = _useState4[0],
       setModalPageToShow = _useState4[1];
 
-  var _useState5 = (0, _react.useState)(null),
+  var _useState5 = (0, _react.useState)('all'),
       _useState6 = _slicedToArray(_useState5, 2),
       tabValue = _useState6[0],
       setTabValue = _useState6[1];
 
   var productContainerRef = (0, _react.useRef)(null);
-  var productInfoRef = (0, _react.useRef)(null);
 
-  var _useState7 = (0, _react.useState)(false),
+  var _useState7 = (0, _react.useState)([]),
       _useState8 = _slicedToArray(_useState7, 2),
-      isShowExtra = _useState8[0],
-      setIsShowExtra = _useState8[1];
+      gallery = _useState8[0],
+      setGallery = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(null),
+      _useState10 = _slicedToArray(_useState9, 2),
+      thumbsSwiper = _useState10[0],
+      setThumbsSwiper = _useState10[1];
 
   var userCustomer = JSON.parse(window.localStorage.getItem('user-customer'));
 
@@ -171,7 +191,7 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
 
     if (windowSize.width <= 768) {
       var productImage = document.getElementById('product_image');
-      topPos = topPos + (myElement.offsetTop < (productImage === null || productImage === void 0 ? void 0 : productImage.clientHeight) ? productImage === null || productImage === void 0 ? void 0 : productImage.clientHeight : 0);
+      topPos = topPos + (myElement.offsetTop < productImage.clientHeight ? productImage.clientHeight : 0);
     }
 
     (0, _utils.scrollTo)(productContainer, topPos, 1250);
@@ -212,33 +232,45 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
   };
 
   (0, _react.useEffect)(function () {
-    if (!tabValue) return;
-
     if (document.getElementById("".concat(tabValue))) {
-      var TabOffset = tabValue === 'all' ? 0 : document.getElementById("".concat(tabValue)).offsetTop;
-      var totalOffset = 0;
+      var extraHeight = windowSize.width < 769 ? 100 : 42;
+      var top = tabValue === 'all' ? 0 : document.getElementById("".concat(tabValue)).offsetTop - extraHeight;
+      var scrollElement = document.querySelector('.popup-dialog');
 
-      if (tabValue === 'all') {
-        totalOffset = productContainerRef.current.offsetTop;
-      } else {
-        totalOffset = productContainerRef.current.offsetTop + productInfoRef.current.offsetTop + TabOffset - 64;
+      if (windowSize.width >= 1200) {
+        scrollElement = productContainerRef.current;
       }
 
-      window.scroll({
-        top: totalOffset,
+      scrollElement.scrollTo({
+        top: top,
         behavior: 'smooth'
       });
     }
   }, [tabValue]);
   (0, _react.useEffect)(function () {
-    var valid = false;
-    (product === null || product === void 0 ? void 0 : product.extras) && product.extras.forEach(function (extra) {
-      return extra.options.forEach(function (option) {
-        if (showOption(option)) valid = true;
-      });
-    });
-    setIsShowExtra(valid);
-  }, [product === null || product === void 0 ? void 0 : product.extras]);
+    var _theme$images, _theme$images$dummies, _product$gallery;
+
+    var imageList = [];
+    imageList.push((product === null || product === void 0 ? void 0 : product.images) || ((_theme$images = theme.images) === null || _theme$images === void 0 ? void 0 : (_theme$images$dummies = _theme$images.dummies) === null || _theme$images$dummies === void 0 ? void 0 : _theme$images$dummies.product));
+
+    if (product !== null && product !== void 0 && product.gallery && (product === null || product === void 0 ? void 0 : (_product$gallery = product.gallery) === null || _product$gallery === void 0 ? void 0 : _product$gallery.length) > 0) {
+      var _iterator = _createForOfIteratorHelper(product === null || product === void 0 ? void 0 : product.gallery),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var galleryItem = _step.value;
+          imageList.push(galleryItem === null || galleryItem === void 0 ? void 0 : galleryItem.file);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    }
+
+    setGallery(imageList);
+  }, [product]);
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, (_props$beforeElements = props.beforeElements) === null || _props$beforeElements === void 0 ? void 0 : _props$beforeElements.map(function (BeforeElement, i) {
     return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, {
       key: i
@@ -247,11 +279,10 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
     return /*#__PURE__*/_react.default.createElement(BeforeComponent, _extends({
       key: i
     }, props));
-  }), /*#__PURE__*/_react.default.createElement(_styles2.ProductContainer, {
+  }), /*#__PURE__*/_react.default.createElement(_styles.ProductContainer, {
     className: "product-container",
-    isExistBottom: document.getElementById('page-footer'),
     ref: productContainerRef
-  }, loading && !error && /*#__PURE__*/_react.default.createElement(_styles2.SkeletonBlock, {
+  }, loading && !error && /*#__PURE__*/_react.default.createElement(_styles.SkeletonBlock, {
     width: 90
   }, /*#__PURE__*/_react.default.createElement(_reactLoadingSkeleton.default, {
     variant: "rect",
@@ -262,6 +293,10 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
   }), /*#__PURE__*/_react.default.createElement(_reactLoadingSkeleton.default, {
     variant: "rect",
     height: 200
+  })), product && !loading && !error && /*#__PURE__*/_react.default.createElement(_styles.ProductShareWrapper, null, /*#__PURE__*/_react.default.createElement(_ProductShare.ProductShare, {
+    slug: businessSlug,
+    categoryId: product === null || product === void 0 ? void 0 : product.category_id,
+    productId: product === null || product === void 0 ? void 0 : product.id
   })), (_props$beforeMidEleme = props.beforeMidElements) === null || _props$beforeMidEleme === void 0 ? void 0 : _props$beforeMidEleme.map(function (BeforeMidElements, i) {
     return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, {
       key: i
@@ -270,33 +305,75 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
     return /*#__PURE__*/_react.default.createElement(BeforeMidComponents, _extends({
       key: i
     }, props));
-  }), !loading && !error && product && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_styles2.WrapperImage, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductImage, {
-    id: "product_image"
-  }, product && !loading && !error && /*#__PURE__*/_react.default.createElement(_ProductShare.ProductShare, {
-    slug: businessSlug,
-    categoryId: product === null || product === void 0 ? void 0 : product.category_id,
-    productId: product === null || product === void 0 ? void 0 : product.id
-  }), /*#__PURE__*/_react.default.createElement("img", {
-    src: optimizeImage((product === null || product === void 0 ? void 0 : product.images) || ((_theme$images = theme.images) === null || _theme$images === void 0 ? void 0 : (_theme$images$dummies = _theme$images.dummies) === null || _theme$images$dummies === void 0 ? void 0 : _theme$images$dummies.product), 'h_300,c_limit'),
-    alt: "product",
-    width: "300px",
-    height: "300px",
-    loading: "lazy",
-    onError: function onError(e) {
-      var _theme$images2, _theme$images2$dummie;
-
-      e.target.onerror = null;
-      e.target.src = (_theme$images2 = theme.images) === null || _theme$images2 === void 0 ? void 0 : (_theme$images2$dummie = _theme$images2.dummies) === null || _theme$images2$dummie === void 0 ? void 0 : _theme$images2$dummie.product;
-    }
-  }))), /*#__PURE__*/_react.default.createElement(_styles2.ProductInfo, {
-    ref: productInfoRef
-  }, /*#__PURE__*/_react.default.createElement(_styles2.ProductFormTitle, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductInnerContainer, null, /*#__PURE__*/_react.default.createElement("h1", null, product === null || product === void 0 ? void 0 : product.name), /*#__PURE__*/_react.default.createElement("h4", null, parsePrice(product === null || product === void 0 ? void 0 : product.price)), (product === null || product === void 0 ? void 0 : product.description) && /*#__PURE__*/_react.default.createElement("p", null, product === null || product === void 0 ? void 0 : product.description), (product === null || product === void 0 ? void 0 : product.sku) && (product === null || product === void 0 ? void 0 : product.sku) !== '-1' && (product === null || product === void 0 ? void 0 : product.sku) !== '1' && /*#__PURE__*/_react.default.createElement(_styles2.SkuContent, null, /*#__PURE__*/_react.default.createElement("h2", null, t('SKU', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag = theme.defaultLanguages) === null || _theme$defaultLanguag === void 0 ? void 0 : _theme$defaultLanguag.SKU) || 'Sku')), /*#__PURE__*/_react.default.createElement("p", null, product === null || product === void 0 ? void 0 : product.sku)))), /*#__PURE__*/_react.default.createElement(_styles2.ProductEdition, null, ((product === null || product === void 0 ? void 0 : product.ingredients.length) > 0 || isShowExtra) && /*#__PURE__*/_react.default.createElement(_styles2.ProductTabContainer, {
+  }), !loading && !error && product && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_styles.WrapperImage, null, /*#__PURE__*/_react.default.createElement(_styles.SwiperWrapper, null, /*#__PURE__*/_react.default.createElement(_react2.Swiper, {
+    spaceBetween: 10,
+    navigation: true,
+    thumbs: {
+      swiper: thumbsSwiper
+    },
+    className: "mySwiper2"
+  }, gallery.map(function (img, i) {
+    return /*#__PURE__*/_react.default.createElement(_react2.SwiperSlide, {
+      key: i
+    }, /*#__PURE__*/_react.default.createElement("img", {
+      src: img,
+      alt: ""
+    }));
+  })), /*#__PURE__*/_react.default.createElement(_react2.Swiper, {
+    onSwiper: setThumbsSwiper,
+    spaceBetween: 20,
+    slidesPerView: 5,
+    breakpoints: {
+      0: {
+        slidesPerView: 3,
+        spaceBetween: 20
+      },
+      300: {
+        slidesPerView: 4,
+        spaceBetween: 20
+      },
+      400: {
+        slidesPerView: 5,
+        spaceBetween: 20
+      },
+      550: {
+        slidesPerView: 6,
+        spaceBetween: 20
+      },
+      769: {
+        slidesPerView: 4,
+        spaceBetween: 20
+      },
+      1000: {
+        slidesPerView: 5,
+        spaceBetween: 20
+      },
+      1400: {
+        slidesPerView: 6,
+        spaceBetween: 20
+      },
+      1600: {
+        slidesPerView: 7,
+        spaceBetween: 20
+      }
+    },
+    freeMode: true,
+    watchSlidesProgress: true,
+    className: "product-thumb"
+  }, gallery.map(function (img, i) {
+    return /*#__PURE__*/_react.default.createElement(_react2.SwiperSlide, {
+      key: i
+    }, /*#__PURE__*/_react.default.createElement("img", {
+      src: img,
+      alt: ""
+    }));
+  })))), /*#__PURE__*/_react.default.createElement(_styles.ProductInfo, null, /*#__PURE__*/_react.default.createElement(_styles.ProductFormTitle, null, /*#__PURE__*/_react.default.createElement(_styles.ProductName, null, product === null || product === void 0 ? void 0 : product.name), /*#__PURE__*/_react.default.createElement(_styles.Properties, null, /*#__PURE__*/_react.default.createElement(_styles.PriceContent, null, parsePrice(product === null || product === void 0 ? void 0 : product.price)), /*#__PURE__*/_react.default.createElement(_styles.ProductMeta, null, (product === null || product === void 0 ? void 0 : product.sku) && (product === null || product === void 0 ? void 0 : product.sku) !== '-1' && (product === null || product === void 0 ? void 0 : product.sku) !== '1' && /*#__PURE__*/_react.default.createElement(_styles.SkuContent, null, /*#__PURE__*/_react.default.createElement("span", null, t('SKU', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag = theme.defaultLanguages) === null || _theme$defaultLanguag === void 0 ? void 0 : _theme$defaultLanguag.SKU) || 'Sku'), "\xA0"), /*#__PURE__*/_react.default.createElement("span", null, product === null || product === void 0 ? void 0 : product.sku)), (product === null || product === void 0 ? void 0 : product.sku) && (product === null || product === void 0 ? void 0 : product.sku) !== '-1' && (product === null || product === void 0 ? void 0 : product.sku) !== '1' && (product === null || product === void 0 ? void 0 : product.estimated_person) && /*#__PURE__*/_react.default.createElement("span", null, "\xA0\xB7\xA0"), (product === null || product === void 0 ? void 0 : product.estimated_person) && /*#__PURE__*/_react.default.createElement(_styles.EstimatedPersons, null, /*#__PURE__*/_react.default.createElement("span", null, product === null || product === void 0 ? void 0 : product.estimated_person, "\xA0"), /*#__PURE__*/_react.default.createElement("span", null, t('ESTIMATED_PERSONS', 'persons'))))), (product === null || product === void 0 ? void 0 : product.description) && /*#__PURE__*/_react.default.createElement(_styles.ProductDescription, null, product === null || product === void 0 ? void 0 : product.description)), /*#__PURE__*/_react.default.createElement(_styles.Divider, null), /*#__PURE__*/_react.default.createElement(_styles.ProductEdition, null, ((product === null || product === void 0 ? void 0 : product.ingredients.length) > 0 || (product === null || product === void 0 ? void 0 : product.extras.length) > 0) && /*#__PURE__*/_react.default.createElement(_styles.ProductTabContainer, {
     id: "all"
   }, /*#__PURE__*/_react.default.createElement(_Tabs.Tabs, {
     variant: "primary"
   }, /*#__PURE__*/_react.default.createElement(_Tabs.Tab, {
     key: "all",
-    active: tabValue === 'all' || !tabValue,
+    active: tabValue === 'all',
     onClick: function onClick() {
       return handleChangeTabValue('all');
     },
@@ -308,16 +385,16 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
       return handleChangeTabValue('ingredients');
     },
     borderBottom: true
-  }, t('INGREDIENTS', 'ingredients')), isShowExtra && /*#__PURE__*/_react.default.createElement(_Tabs.Tab, {
+  }, t('INGREDIENTS', 'ingredients')), (product === null || product === void 0 ? void 0 : product.extras.length) > 0 && /*#__PURE__*/_react.default.createElement(_Tabs.Tab, {
     key: "extra",
     active: tabValue === 'extra',
     onClick: function onClick() {
       return handleChangeTabValue('extra');
     },
     borderBottom: true
-  }, t('EXTRA', 'Extra')))), ((product === null || product === void 0 ? void 0 : product.ingredients.length) > 0 || (product === null || product === void 0 ? void 0 : product.extras.length) > 0) && /*#__PURE__*/_react.default.createElement(_styles2.ProductOptionInfo, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductInnerContainer, null, /*#__PURE__*/_react.default.createElement("div", {
+  }, t('EXTRA', 'Extra')))), /*#__PURE__*/_react.default.createElement("div", {
     id: "ingredients"
-  }, (product === null || product === void 0 ? void 0 : product.ingredients.length) > 0 && /*#__PURE__*/_react.default.createElement(_styles2.SectionTitle, null, t('INGREDIENTS', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag2 = theme.defaultLanguages) === null || _theme$defaultLanguag2 === void 0 ? void 0 : _theme$defaultLanguag2.INGREDIENTS) || 'Ingredients')), /*#__PURE__*/_react.default.createElement(_styles2.WrapperIngredients, {
+  }, (product === null || product === void 0 ? void 0 : product.ingredients.length) > 0 && /*#__PURE__*/_react.default.createElement(_styles.SectionTitle, null, t('INGREDIENTS', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag2 = theme.defaultLanguages) === null || _theme$defaultLanguag2 === void 0 ? void 0 : _theme$defaultLanguag2.INGREDIENTS) || 'Ingredients')), /*#__PURE__*/_react.default.createElement(_styles.WrapperIngredients, {
     isProductSoldout: isSoldOut || maxProductQuantity <= 0
   }, product === null || product === void 0 ? void 0 : product.ingredients.map(function (ingredient) {
     return /*#__PURE__*/_react.default.createElement(_ProductIngredient.ProductIngredient, {
@@ -337,7 +414,7 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
         option: option,
         currentState: currentState,
         error: errors["id:".concat(option === null || option === void 0 ? void 0 : option.id)]
-      }, /*#__PURE__*/_react.default.createElement(_styles2.WrapperSubOption, {
+      }, /*#__PURE__*/_react.default.createElement(_styles.WrapperSubOption, {
         className: isError(option === null || option === void 0 ? void 0 : option.id)
       }, option.suboptions.filter(function (suboptions) {
         return suboptions.enabled;
@@ -356,13 +433,13 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
         });
       }))));
     });
-  })))), !(product !== null && product !== void 0 && product.hide_special_instructions) && /*#__PURE__*/_react.default.createElement(_styles2.ProductInnerContainer, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductComment, null, /*#__PURE__*/_react.default.createElement(_styles2.SectionTitle, null, t('SPECIAL_COMMENT', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag3 = theme.defaultLanguages) === null || _theme$defaultLanguag3 === void 0 ? void 0 : _theme$defaultLanguag3.SPECIAL_COMMENT) || 'Special comment')), /*#__PURE__*/_react.default.createElement(_styles.TextArea, {
+  })), !(product !== null && product !== void 0 && product.hide_special_instructions) && /*#__PURE__*/_react.default.createElement(_styles.ProductComment, null, /*#__PURE__*/_react.default.createElement(_styles.SectionTitle, null, t('COMMENTS', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag3 = theme.defaultLanguages) === null || _theme$defaultLanguag3 === void 0 ? void 0 : _theme$defaultLanguag3.SPECIAL_COMMENT) || 'COMMENTS')), /*#__PURE__*/_react.default.createElement(_Inputs.TextArea, {
     rows: 4,
     placeholder: t('SPECIAL_COMMENT', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag4 = theme.defaultLanguages) === null || _theme$defaultLanguag4 === void 0 ? void 0 : _theme$defaultLanguag4.SPECIAL_COMMENT) || 'Special comment'),
     defaultValue: productCart.comment,
     onChange: handleChangeCommentState,
     disabled: !(productCart && !isSoldOut && maxProductQuantity)
-  }))), (_props$afterMidElemen = props.afterMidElements) === null || _props$afterMidElemen === void 0 ? void 0 : _props$afterMidElemen.map(function (MidElement, i) {
+  })), (_props$afterMidElemen = props.afterMidElements) === null || _props$afterMidElemen === void 0 ? void 0 : _props$afterMidElemen.map(function (MidElement, i) {
     return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, {
       key: i
     }, MidElement);
@@ -370,24 +447,24 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
     return /*#__PURE__*/_react.default.createElement(MidComponent, _extends({
       key: i
     }, props));
-  })), productCart.total && /*#__PURE__*/_react.default.createElement(_styles2.ProductCartTotalPrice, null, /*#__PURE__*/_react.default.createElement("span", null, t('Price_V2', 'Price')), /*#__PURE__*/_react.default.createElement("span", null, parsePrice(productCart.total))), /*#__PURE__*/_react.default.createElement(_styles2.ProductActions, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductInnerContainer, null, /*#__PURE__*/_react.default.createElement(_styles2.ProductActionHeaderContainer, null, productCart && !isSoldOut && maxProductQuantity > 0 && /*#__PURE__*/_react.default.createElement(_styles2.IncDecActions, null, /*#__PURE__*/_react.default.createElement("button", {
-    className: "decrease",
+  })), /*#__PURE__*/_react.default.createElement(_styles.ProductActions, null, /*#__PURE__*/_react.default.createElement("div", {
+    className: "price"
+  }, productCart.total && parsePrice(productCart.total)), productCart && !isSoldOut && maxProductQuantity > 0 && /*#__PURE__*/_react.default.createElement("div", {
+    className: "incdec-control"
+  }, /*#__PURE__*/_react.default.createElement(_FiMinusCircle.default, {
     onClick: decrement,
-    disabled: productCart.quantity === 1 || isSoldOut
-  }, "-"), /*#__PURE__*/_react.default.createElement("span", null, productCart.quantity), /*#__PURE__*/_react.default.createElement("button", {
-    className: "increase",
+    className: "".concat(productCart.quantity === 1 || isSoldOut ? 'disabled' : '')
+  }), /*#__PURE__*/_react.default.createElement("span", null, productCart.quantity), /*#__PURE__*/_react.default.createElement(_FiPlusCircle.default, {
     onClick: increment,
-    disabled: maxProductQuantity <= 0 || productCart.quantity >= maxProductQuantity || isSoldOut
-  }, "+")), productCart.total && /*#__PURE__*/_react.default.createElement(_styles2.ProductCartTotalPrice, {
-    isMobile: true
-  }, /*#__PURE__*/_react.default.createElement("span", null, t('Price_V2', 'Price')), /*#__PURE__*/_react.default.createElement("span", null, parsePrice(productCart.total)))), productCart && !isSoldOut && maxProductQuantity > 0 && auth && ((_orderState$options = orderState.options) === null || _orderState$options === void 0 ? void 0 : _orderState$options.address_id) && /*#__PURE__*/_react.default.createElement(_styles.Button, {
+    className: "".concat(maxProductQuantity <= 0 || productCart.quantity >= maxProductQuantity || isSoldOut ? 'disabled' : '')
+  })), productCart && !isSoldOut && maxProductQuantity > 0 && auth && ((_orderState$options = orderState.options) === null || _orderState$options === void 0 ? void 0 : _orderState$options.address_id) && /*#__PURE__*/_react.default.createElement(_Buttons.Button, {
     className: "add ".concat(maxProductQuantity === 0 || Object.keys(errors).length > 0 ? 'disabled' : ''),
-    color: "primaryGradient",
+    color: "primary",
     onClick: function onClick() {
       return handleSaveProduct();
     },
     disabled: orderState.loading
-  }, orderState.loading ? /*#__PURE__*/_react.default.createElement("span", null, t('LOADING', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag5 = theme.defaultLanguages) === null || _theme$defaultLanguag5 === void 0 ? void 0 : _theme$defaultLanguag5.LOADING) || 'Loading')) : /*#__PURE__*/_react.default.createElement("span", null, editMode ? t('UPDATE', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag6 = theme.defaultLanguages) === null || _theme$defaultLanguag6 === void 0 ? void 0 : _theme$defaultLanguag6.UPDATE) || 'Update') : t('ADD_TO_CART', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag7 = theme.defaultLanguages) === null || _theme$defaultLanguag7 === void 0 ? void 0 : _theme$defaultLanguag7.ADD_TO_CART) || 'Add to Cart'))), auth && !((_orderState$options2 = orderState.options) !== null && _orderState$options2 !== void 0 && _orderState$options2.address_id) && (orderState.loading ? /*#__PURE__*/_react.default.createElement(_styles.Button, {
+  }, orderState.loading ? /*#__PURE__*/_react.default.createElement("span", null, t('LOADING', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag5 = theme.defaultLanguages) === null || _theme$defaultLanguag5 === void 0 ? void 0 : _theme$defaultLanguag5.LOADING) || 'Loading')) : /*#__PURE__*/_react.default.createElement("span", null, editMode ? t('UPDATE', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag6 = theme.defaultLanguages) === null || _theme$defaultLanguag6 === void 0 ? void 0 : _theme$defaultLanguag6.UPDATE) || 'Update') : t('ADD', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag7 = theme.defaultLanguages) === null || _theme$defaultLanguag7 === void 0 ? void 0 : _theme$defaultLanguag7.ADD) || 'Add'))), auth && !((_orderState$options2 = orderState.options) !== null && _orderState$options2 !== void 0 && _orderState$options2.address_id) && (orderState.loading ? /*#__PURE__*/_react.default.createElement(_Buttons.Button, {
     className: "add",
     color: "primary",
     disabled: true
@@ -396,7 +473,7 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
     userId: isNaN(userCustomer === null || userCustomer === void 0 ? void 0 : userCustomer.id) ? null : userCustomer === null || userCustomer === void 0 ? void 0 : userCustomer.id,
     addressList: isNaN(userCustomer === null || userCustomer === void 0 ? void 0 : userCustomer.id) ? user.addresses : null,
     isProductForm: true
-  })), (!auth || isSoldOut || maxProductQuantity <= 0) && /*#__PURE__*/_react.default.createElement(_styles.Button, {
+  })), (!auth || isSoldOut || maxProductQuantity <= 0) && /*#__PURE__*/_react.default.createElement(_Buttons.Button, {
     className: "add ".concat(!(productCart && !isSoldOut && maxProductQuantity > 0) ? 'soldout' : ''),
     color: "primary",
     outline: true,
@@ -404,13 +481,12 @@ var ProductOptionsUI = function ProductOptionsUI(props) {
     onClick: function onClick() {
       return setModalIsOpen(true);
     }
-  }, isSoldOut || maxProductQuantity <= 0 ? t('SOLD_OUT', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag9 = theme.defaultLanguages) === null || _theme$defaultLanguag9 === void 0 ? void 0 : _theme$defaultLanguag9.SOLD_OUT) || 'Sold out') : t('LOGIN_SIGNUP', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag10 = theme.defaultLanguages) === null || _theme$defaultLanguag10 === void 0 ? void 0 : _theme$defaultLanguag10.LOGIN_SIGNUP) || 'Login / Sign Up')))))), modalIsOpen && !auth && /*#__PURE__*/_react.default.createElement(_Modal.Modal, {
+  }, isSoldOut || maxProductQuantity <= 0 ? t('SOLD_OUT', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag9 = theme.defaultLanguages) === null || _theme$defaultLanguag9 === void 0 ? void 0 : _theme$defaultLanguag9.SOLD_OUT) || 'Sold out') : t('LOGIN_SIGNUP', (theme === null || theme === void 0 ? void 0 : (_theme$defaultLanguag10 = theme.defaultLanguages) === null || _theme$defaultLanguag10 === void 0 ? void 0 : _theme$defaultLanguag10.LOGIN_SIGNUP) || 'Login / Sign Up'))))), modalIsOpen && !auth && /*#__PURE__*/_react.default.createElement(_Modal.Modal, {
     open: modalIsOpen,
     onClose: function onClose() {
       return closeModal();
     },
-    width: "70%",
-    padding: "0"
+    width: "50%"
   }, modalPageToShow === 'login' && /*#__PURE__*/_react.default.createElement(_LoginForm.LoginForm, {
     handleSuccessLogin: handleSuccessLogin,
     elementLinkToSignup: /*#__PURE__*/_react.default.createElement("a", {
