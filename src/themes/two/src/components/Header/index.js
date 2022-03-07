@@ -29,7 +29,7 @@ import { CartPopover } from '../CartPopover'
 import { OrderTypeSelectorHeader } from '../OrderTypeSelectorHeader'
 import { CartContent } from '../../../../../components/CartContent'
 import { Modal } from '../../../../../components/Modal'
-import { MomentContent } from '../MomentContent'
+import { MomentControl } from '../MomentControl'
 import { AddressList } from '../../../../../components/AddressList'
 import { AddressForm } from '../../../../../components/AddressForm'
 import { HeaderOption } from '../HeaderOption'
@@ -291,13 +291,8 @@ export const Header = (props) => {
                 isHome={isHome}
               />
               {(isPreOrderSetting || configState?.configs?.preorder_status_enabled?.value === undefined) && (
-                <HeaderOption
-                  variant='moment'
-                  momentState={orderState?.options?.moment}
-                  onClick={configState?.configs?.max_days_preorder?.value === -1 || configState?.configs?.max_days_preorder?.value === 0
-                    ? null
-                    : (variant) => openModal(variant)}
-                  isHome={isHome}
+                <MomentControl 
+                  isModalBehavior
                 />
               )}
             </SubMenu>
@@ -335,9 +330,6 @@ export const Header = (props) => {
                   onSaveAddress={() => setModalIsOpen(false)}
                 />
               )
-            )}
-            {modalSelected === 'moment' && (
-              <MomentContent />
             )}
           </Modal>
         )}
