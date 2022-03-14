@@ -13,6 +13,8 @@ var _NotFoundSource = require("../../../../../components/NotFoundSource");
 
 var _BusinessController = require("../BusinessController");
 
+var _SearchBar = require("../SearchBar");
+
 var _styles = require("./styles");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -46,7 +48,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var CartStoresListingUI = function CartStoresListingUI(props) {
   var _Object$values$find$b, _Object$values$find, _storesState$result, _storesState$result2;
 
-  var businessIdSelect = props.businessIdSelect,
+  var searchValue = props.searchValue,
+      businessIdSelect = props.businessIdSelect,
       storesState = props.storesState,
       changeStoreState = props.changeStoreState,
       handleChangeSearch = props.handleChangeSearch,
@@ -63,7 +66,7 @@ var CartStoresListingUI = function CartStoresListingUI(props) {
   var businessId = (_Object$values$find$b = (_Object$values$find = Object.values(orderState.carts).find(function (_cart) {
     return (_cart === null || _cart === void 0 ? void 0 : _cart.uuid) === props.cartuuid;
   })) === null || _Object$values$find === void 0 ? void 0 : _Object$values$find.business_id) !== null && _Object$values$find$b !== void 0 ? _Object$values$find$b : {};
-  return /*#__PURE__*/_react.default.createElement(_styles.Container, null, !(storesState !== null && storesState !== void 0 && storesState.loading) && !(storesState !== null && storesState !== void 0 && storesState.error) && (storesState === null || storesState === void 0 ? void 0 : storesState.result) && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, (!(storesState !== null && storesState !== void 0 && storesState.error || !(storesState !== null && storesState !== void 0 && (_storesState$result = storesState.result) !== null && _storesState$result !== void 0 && _storesState$result.length)) || searchValue) && /*#__PURE__*/_react.default.createElement(_styles.WrapperSearch, null, /*#__PURE__*/_react.default.createElement(SearchBar, {
+  return /*#__PURE__*/_react.default.createElement(_styles.Container, null, !(storesState !== null && storesState !== void 0 && storesState.loading) && !(storesState !== null && storesState !== void 0 && storesState.error) && (storesState === null || storesState === void 0 ? void 0 : storesState.result) && /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, (!(storesState !== null && storesState !== void 0 && storesState.error || !(storesState !== null && storesState !== void 0 && (_storesState$result = storesState.result) !== null && _storesState$result !== void 0 && _storesState$result.length)) || searchValue) && /*#__PURE__*/_react.default.createElement(_styles.WrapperSearch, null, /*#__PURE__*/_react.default.createElement(_SearchBar.SearchBar, {
     onSearch: handleChangeSearch,
     search: searchValue,
     placeholder: t('SEARCH_BUSINESSES', 'Search Businesses')
