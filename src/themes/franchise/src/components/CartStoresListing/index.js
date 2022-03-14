@@ -7,6 +7,7 @@ import {
 
 import { NotFoundSource } from '../../../../../components/NotFoundSource'
 import { BusinessController } from '../BusinessController'
+import { SearchBar } from '../SearchBar'
 
 import {
   Container,
@@ -16,6 +17,7 @@ import {
 
 const CartStoresListingUI = (props) => {
   const {
+    searchValue,
     businessIdSelect,
     storesState,
     changeStoreState,
