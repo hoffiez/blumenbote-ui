@@ -3,12 +3,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useSession, useLanguage, useOrder, useEvent, useConfig, useCustomer, useUtils } from 'ordering-components'
 import { useTheme } from 'styled-components'
-import FaUserCircle from '@meronex/icons/fa/FaUserCircle'
 import MdClose from '@meronex/icons/md/MdClose'
 import { GeoAlt } from 'react-bootstrap-icons'
 import TiWarningOutline from '@meronex/icons/ti/TiWarningOutline'
 import { OrderTypeSelectorContent } from '../OrderTypeSelectorContent'
-
+import { LanguageSelector } from '../LanguageSelector'
 import {
   Header as HeaderContainer,
   InnerHeader,
@@ -22,7 +21,8 @@ import {
   UserEdit,
   AddressMenu,
   MomentMenu,
-  FarAwayMessage
+  FarAwayMessage,
+  Divider
 } from './styles'
 import { useWindowSize } from '../../../../../hooks/useWindowSize'
 import { useOnlineStatus } from '../../../../../hooks/useOnlineStatus'
@@ -37,11 +37,8 @@ import { AddressList } from '../AddressList'
 import { AddressForm } from '../AddressForm'
 import { HeaderOption } from '../HeaderOption'
 import { SidebarMenu } from '../SidebarMenu'
-import { UserDetails } from '../../../../../components/UserDetails'
+import { UserDetails } from '../UserDetails'
 import { Confirm } from '../Confirm'
-import { LoginForm } from '../LoginForm'
-import { SignUpForm } from '../SignUpForm'
-import { ForgotPasswordForm } from '../ForgotPasswordForm'
 import { getDistance } from '../../../../../utils'
 
 export const Header = (props) => {
@@ -57,7 +54,7 @@ export const Header = (props) => {
   const [events] = useEvent()
   const [{ parseDate }] = useUtils()
   const [, t] = useLanguage()
-  const [{ auth }, { login }] = useSession()
+  const [{ auth }] = useSession()
   const [orderState, { refreshOrderOptions }] = useOrder()
   const [openPopover, setOpenPopover] = useState({})
   const theme = useTheme()
@@ -67,12 +64,11 @@ export const Header = (props) => {
   const clearCustomer = useRef(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [customerModalOpen, setCustomerModalOpen] = useState(false)
-  const [authModalOpen, setAuthModalOpen] = useState(false)
   const [modalSelected, setModalSelected] = useState(null)
-  const [modalPageToShow, setModalPageToShow] = useState(null)
   const [confirm, setConfirm] = useState({ open: false, content: null, handleOnAccept: null })
   const [isFarAway, setIsFarAway] = useState(false)
-
+  const [isOpenUserData, setIsOpenUserData] = useState(false)
+  const [isAddressFormOpen, setIsAddressFormOpen] = useState(false)
   const cartsWithProducts = (orderState?.carts && Object.values(orderState?.carts).filter(cart => cart.products && cart.products?.length > 0)) || null
 
   const windowSize = useWindowSize()
@@ -83,13 +79,6 @@ export const Header = (props) => {
   const orderTypeList = [t('DELIVERY', 'Delivery'), t('PICKUP', 'Pickup'), t('EAT_IN', 'Eat in'), t('CURBSIDE', 'Curbside'), t('DRIVE_THRU', 'Drive thru')]
   const configTypes = configState?.configs?.order_types_allowed?.value.split('|').map(value => Number(value)) || []
   const isPreOrderSetting = configState?.configs?.preorder_status_enabled?.value === '1'
-
-  const handleSuccessSignup = (user) => {
-    login({
-      user,
-      token: user?.session?.access_token
-    })
-  }
 
   const handleClickUserCustomer = (e) => {
     const isActionsClick = clearCustomer.current?.contains(e?.target)
@@ -136,25 +125,8 @@ export const Header = (props) => {
     }
   }
 
-  const handleCustomModalClick = (e, { page }) => {
-    e.preventDefault()
-    setModalPageToShow(page)
-  }
-
-  const closeAuthModal = () => {
-    setAuthModalOpen(false)
-    setModalPageToShow(null)
-  }
-
-  const handleSuccessLogin = (user) => {
-    if (user) {
-      closeAuthModal()
-    }
-  }
-
-  const handleOpenLoginSignUp = (index) => {
-    setModalPageToShow(index)
-    setAuthModalOpen(true)
+  const handleOpenLoginSignUp = (page) => {
+    events.emit('go_to_page', { page: 'home' })
   }
 
   useEffect(() => {
@@ -214,12 +186,17 @@ export const Header = (props) => {
                   <span>{t('YOU_ARE_FAR_FROM_ADDRESS', 'You are far from this address')}</span>
                 </FarAwayMessage>
               )}
+              <AddressMenu
+                onClick={(e) => handleClickUserCustomer(e)}
+              >
+                <GeoAlt /> {orderState.options?.address?.address?.split(',')?.[0] || t('WHAT_IS_YOUR_ADDRESS', 'What\'s your address?')}
+              </AddressMenu>
+              <Divider />
               {isCustomerMode && windowSize.width > 450 && (
                 <CustomerInfo
                   onClick={(e) => handleClickUserCustomer(e)}
                 >
                   <span>
-                    <FaUserCircle />
                     <p>{userCustomer?.name} {userCustomer?.lastname}</p>
                   </span>
                   <span
@@ -230,13 +207,9 @@ export const Header = (props) => {
                   </span>
                 </CustomerInfo>
               )}
+              <Divider />
               {onlineStatus && windowSize.width > 820 && (
                 <>
-                  <AddressMenu
-                    onClick={() => openModal('address')}
-                  >
-                    <GeoAlt /> {orderState.options?.address?.address?.split(',')?.[0] || t('WHAT_IS_YOUR_ADDRESS', 'What\'s your address?')}
-                  </AddressMenu>
                   {!isCustomerMode && (isPreOrderSetting || configState?.configs?.preorder_status_enabled?.value === undefined) && (
                     <MomentMenu
                       onClick={configState?.configs?.max_days_preorder?.value === -1 || configState?.configs?.max_days_preorder?.value === 0
@@ -308,6 +281,7 @@ export const Header = (props) => {
                           />
                         )
                       )}
+                      <LanguageSelector />
                       {windowSize.width > 768 && (
                         <UserPopover
                           withLogout
@@ -422,89 +396,38 @@ export const Header = (props) => {
         {isCustomerMode && customerModalOpen && (
           <Modal
             open={customerModalOpen}
-            width='60%'
+            width='80%'
             onClose={() => setCustomerModalOpen(false)}
+            padding='20px'
+            hideCloseDefault
           >
             <UserEdit>
               {!customerState?.loading && (
                 <>
                   <UserDetails
+                    isAddressFormOpen={isAddressFormOpen}
                     userData={customerState?.user}
                     userId={customerState?.user?.id}
+                    isOpenUserData={isOpenUserData}
                     isCustomerMode
+                    isModal
+                    setIsOpenUserData={setIsOpenUserData}
+                    onClose={() => setCustomerModalOpen(false)}
                   />
                   <AddressList
                     isModal
                     userId={customerState?.user?.id}
                     changeOrderAddressWithDefault
                     userCustomerSetup={customerState.user}
+                    isOpenUserData={isOpenUserData}
                     setCustomerModalOpen={setCustomerModalOpen}
+                    setIsOpenUserData={setIsOpenUserData}
+                    setIsAddressFormOpen={setIsAddressFormOpen}
+                    isHeader
                   />
                 </>
               )}
             </UserEdit>
-          </Modal>
-        )}
-        {authModalOpen && !auth && (
-          <Modal
-            open={authModalOpen}
-            onRemove={() => closeAuthModal()}
-            width='50%'
-            authModal
-          >
-            {modalPageToShow === 'login' && (
-              <LoginForm
-                handleSuccessLogin={handleSuccessLogin}
-                elementLinkToSignup={
-                  <a
-                    onClick={
-                      (e) => handleCustomModalClick(e, { page: 'signup' })
-                    } href='#'
-                  >{t('CREATE_ACCOUNT', theme?.defaultLanguages?.CREATE_ACCOUNT || 'Create account')}
-                  </a>
-                }
-                elementLinkToForgotPassword={
-                  <a
-                    onClick={
-                      (e) => handleCustomModalClick(e, { page: 'forgotpassword' })
-                    } href='#'
-                  >{t('RESET_PASSWORD', theme?.defaultLanguages?.RESET_PASSWORD || 'Reset password')}
-                  </a>
-                }
-                useLoginByCellphone
-                isPopup
-              />
-            )}
-            {modalPageToShow === 'signup' && (
-              <SignUpForm
-                elementLinkToLogin={
-                  <a
-                    onClick={
-                      (e) => handleCustomModalClick(e, { page: 'login' })
-                    } href='#'
-                  >{t('LOGIN', theme?.defaultLanguages?.LOGIN || 'Login')}
-                  </a>
-                }
-                useLoginByCellphone
-                useChekoutFileds
-                handleSuccessSignup={handleSuccessSignup}
-                isPopup
-                closeModal={() => closeAuthModal()}
-              />
-            )}
-            {modalPageToShow === 'forgotpassword' && (
-              <ForgotPasswordForm
-                elementLinkToLogin={
-                  <a
-                    onClick={
-                      (e) => handleCustomModalClick(e, { page: 'login' })
-                    } href='#'
-                  >{t('LOGIN', theme?.defaultLanguages?.LOGIN || 'Login')}
-                  </a>
-                }
-                isPopup
-              />
-            )}
           </Modal>
         )}
         <Confirm
