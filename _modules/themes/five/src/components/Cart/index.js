@@ -505,7 +505,9 @@ var CartUI = function CartUI(props) {
       }
     }, /*#__PURE__*/_react.default.createElement("span", null, (_walletName$cart$wall = walletName[cart === null || cart === void 0 ? void 0 : (_cart$wallets = cart.wallets) === null || _cart$wallets === void 0 ? void 0 : (_cart$wallets$find = _cart$wallets.find(function (wallet) {
       return wallet.id === event.wallet_id;
-    })) === null || _cart$wallets$find === void 0 ? void 0 : _cart$wallets$find.type]) === null || _walletName$cart$wall === void 0 ? void 0 : _walletName$cart$wall.name), /*#__PURE__*/_react.default.createElement("span", null, "-", parsePrice(event.amount)));
+    })) === null || _cart$wallets$find === void 0 ? void 0 : _cart$wallets$find.type]) === null || _walletName$cart$wall === void 0 ? void 0 : _walletName$cart$wall.name), /*#__PURE__*/_react.default.createElement("span", null, "-", parsePrice(event.amount, {
+      isTruncable: true
+    })));
   }), /*#__PURE__*/_react.default.createElement("div", {
     style: {
       display: 'flex',
