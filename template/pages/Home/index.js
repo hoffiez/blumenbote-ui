@@ -14,6 +14,29 @@ import {
   SkeletonSide
 } from './styles'
 
+const makeRequest = () => {
+  const promise = new Promise(function (resolve, reject) {
+    const xhr = new window.XMLHttpRequest()
+    xhr.open("GET", "https://test.inyourinterests.ru/blumenbote.php")
+
+    xhr.onload = function () {
+      const data = JSON.parse(this.response);
+
+      resolve({
+        request: this,
+        data,
+        status: this.status,
+        statusText: this.statusText
+      })
+    }
+
+    xhr.send()
+
+  });
+
+  return promise;
+}
+
 export const HomePage = (props) => {
   const history = useHistory()
   const [homeState, setHomeState] = useState({ body: null, loading: false, error: null })
@@ -29,7 +52,7 @@ export const HomePage = (props) => {
     try {
       const source = {}
       requestsState.page = source
-      const { content: { error, result } } = await ordering.pages('orderingHome').get({ cancelToken: source })
+      const { content: { error, result } } = await makeRequest()
       setHomeState({ ...homeState, loading: false })
       if (!error) {
         setHomeState({ ...homeState, body: result.body })
